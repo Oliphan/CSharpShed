@@ -48,23 +48,16 @@ jobs:
             -p:SymbolPackageFormat=snupkg \
             -o ./artifacts
 
-      - name: Configure GitHub Packages Feed
-        run: |
-          dotnet nuget add source \
-            "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json" \
-            --name github \
-            --username "${{ github.actor }}" \
-            --password "${{ github.token }}" \
-            --store-password-in-clear-text
-
       - name: Publish NuGet Package
         run: |
           dotnet nuget push "./artifacts/${{ inputs.project-name }}.${{ inputs.version }}.nupkg" \
-            --source github \
+            --source "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json" \
+            --api-key "${{ github.token }}" \
             --skip-duplicate
 
       - name: Publish Symbols Package
         run: |
           dotnet nuget push "./artifacts/${{ inputs.project-name }}.${{ inputs.version }}.snupkg" \
-            --source github \
+            --source "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json" \
+            --api-key "${{ github.token }}" \
             --skip-duplicate
