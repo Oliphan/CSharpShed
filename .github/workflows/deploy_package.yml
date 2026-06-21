@@ -1,0 +1,70 @@
+name: Deploys a new version of a NuGet package to the GitHub feed
+
+on:
+  workflow_call:
+    inputs:
+      project-name:
+        description: name to the project to build, package, and deploy
+        required: true
+        type: string
+
+      version:
+        description: Package version
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.0.x"
+
+      - name: Restore
+        run: dotnet restore "${{ inputs.project-name }}/${{ inputs.project-name }}.csproj"
+
+      - name: Build
+        run: |
+          dotnet build "$${{ inputs.project-name }}/${{ inputs.project-name }}.csproj" \
+            -c Release \
+            --no-restore
+
+      - name: Pack
+        run: |
+          dotnet pack "${{ inputs.project-name }}/${{ inputs.project-name }}.csproj" \
+            -c Release \
+            --no-build \
+            -p:PackageVersion=${{ inputs.version }} \
+            -p:IncludeSymbols=true \
+            -p:SymbolPackageFormat=snupkg \
+            -o ./artifacts
+
+      - name: Configure GitHub Packages Feed
+        run: |
+          dotnet nuget add source \
+            "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json" \
+            --name github \
+            --username "${{ github.actor }}" \
+            --password "${{ github.token }}" \
+            --store-password-in-clear-text
+
+      - name: Publish NuGet Package
+        run: |
+          dotnet nuget push "./artifacts/${{ inputs.project-name }}.${{ inputs.version }}.nupkg" \
+            --source github \
+            --skip-duplicate
+
+      - name: Publish Symbols Package
+        run: |
+          dotnet nuget push "./artifacts/${{ inputs.project-name }}.${{ inputs.version }}.snupkg" \
+            --source github \
+            --skip-duplicate
