@@ -12,5 +12,5 @@ jobs:
   publish:
     uses: ./.github/workflows/deploy_package.yml
     with:
-      project-path: Shed.ResourceManagement/Shed.ResourceManagement.csproj
+      project-name: Shed.ResourceManagement
       version: ${{ inputs.version }}
