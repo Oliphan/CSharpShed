@@ -2,97 +2,99 @@ namespace Shed.ResourceManagement.Tests.Access
 {
 	using Shed.ResourceManagement.Access;
 
-
-	public class SharedResourceTests
+    public class SharedResourceTests
 	{
-		private IDisposable onReleasedResource;
+		private readonly IDisposable onReleasedResource = Substitute.For<IDisposable>();
 
-		private SharedResource<int> sharedResource;
+		private readonly SharedResource<int> originalSharedResourceInstance;
 
 
-		[SetUp]
-		public void SetUp()
+		public SharedResourceTests()
 		{
-			onReleasedResource = Substitute.For<IDisposable>();
-
-			sharedResource = new SharedResource<int>(10, onReleasedResource);
+			originalSharedResourceInstance = new SharedResource<int>(10, onReleasedResource);
 		}
 
 
-		[TearDown]
-		public void TearDown()
-		{
-			onReleasedResource.Dispose();
-			sharedResource.Dispose();
-		}
+		[Fact]
+		public void Resource_WhenNotDisposed_AllowsAccessToResource()
+			=> Assert.Equal(10, originalSharedResourceInstance.Resource);
 
-
-		[Test]
-		public void AllowsAccessToResourceWhenNotDisposed()
-			=> Assert.That(sharedResource.Resource, Is.EqualTo(10));
-
-		[Test]
-		public void AccessingResourceWhenDisposedThrowsObjectDisposedException()
+		[Fact]
+		public void Resource_WhenDisposed_ThrowsObjectDisposedException()
 		{
 			// Act
-			sharedResource.Dispose();
+			originalSharedResourceInstance.Dispose();
 
 			// Assert
-			Assert.Throws<ObjectDisposedException>(() => _ = sharedResource.Resource);
+			Assert.Throws<ObjectDisposedException>(() => _ = originalSharedResourceInstance.Resource);
 		}
 
-		[Test]
-		public void DisposalWhenOnlyInstanceCallsOnReleasedResource()
+		[Fact]
+		public void Dispose_WhenOnlyInstance_CallsOnReleasedResource()
 		{
 			// Act
-			sharedResource.Dispose();
+			originalSharedResourceInstance.Dispose();
 
 			// Assert
-			Assert.DoesNotThrow(() => onReleasedResource.Received(1).Dispose());
+			onReleasedResource.Received(1).Dispose();
 		}
 
-		[Test]
-		public void DisposalWhenOtherInstancesExistDoesNotCallOnReleasedResource()
+		[Fact]
+		public void DisposeOriginalInstance_WhenInstanceCreatedByShareAccessNotDisposed_DoesNotCallOnReleasedResource()
 		{
 			// Arrange
-			using var otherInstance = sharedResource.ShareAccess();
+			using var otherInstance = originalSharedResourceInstance.ShareAccess();
 
 			// Act
-			sharedResource.Dispose();
+			originalSharedResourceInstance.Dispose();
 
 			// Assert
-			Assert.DoesNotThrow(() => onReleasedResource.DidNotReceive().Dispose());
+			onReleasedResource.DidNotReceive().Dispose();
 		}
 
-		[Test]
-		public void DisposalOfSharedInstanceWhenInitialInstanceStillExistsDoesCallsOnReleasedResource()
+		[Fact]
+		public void DisposeInstanceCreatedByShareAccess_WhenOriginalInstanceNotDisposed_DoesCallsOnReleasedResource()
 		{
 			// Arrange
-			var otherInstance = sharedResource.ShareAccess();
+			var otherInstance = originalSharedResourceInstance.ShareAccess();
 
 			// Act
 			otherInstance.Dispose();
 
 			// Assert
-			Assert.DoesNotThrow(() => onReleasedResource.DidNotReceive().Dispose());
+			onReleasedResource.DidNotReceive().Dispose();
 		}
 
-		[Test]
-		public void DisposalOfLastInstanceCallsOnReleasedResource()
+		[Fact]
+		public void Dispose_WhenCalledOnSharedInstanceAfterOriginal_CallsOnReleasedResource()
 		{
 			// Arrange
-			var otherInstance = sharedResource.ShareAccess();
+			var otherInstance = originalSharedResourceInstance.ShareAccess();
 
 			// Act
 			otherInstance.Dispose();
-			sharedResource.Dispose();
+			originalSharedResourceInstance.Dispose();
 
 			// Assert
-			Assert.DoesNotThrow(() => onReleasedResource.Received(1).Dispose());
+			onReleasedResource.Received(1).Dispose();
 		}
 
-		[Test]
+		[Fact]
+		public void Dispose_WhenCalledOnOriginalInstanceAfterShared_CallsOnReleasedResource()
+		{
+			// Arrange
+			var otherInstance = originalSharedResourceInstance.ShareAccess();
+
+			// Act
+			originalSharedResourceInstance.Dispose();
+			otherInstance.Dispose();
+
+			// Assert
+			onReleasedResource.Received(1).Dispose();
+		}
+
+		[Fact]
 		public void DisposeIsNotCalledEarly()
-			=> Assert.DoesNotThrow(() => onReleasedResource.ReceivedWithAnyArgs(0).Dispose());
+			=> onReleasedResource.DidNotReceiveWithAnyArgs().Dispose();
 	}
 }
