@@ -1,0 +1,16 @@
+name: Deploy Late Injection package
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Package version
+        required: true
+        type: string
+
+jobs:
+  publish:
+    uses: ./.github/workflows/deploy_package.yml
+    with:
+      project-name: Shed.LateInjection
+      version: ${{ inputs.version }}
