@@ -34,7 +34,7 @@ jobs:
 
       - name: Build
         run: |
-          dotnet build "$${{ inputs.project-name }}/${{ inputs.project-name }}.csproj" \
+          dotnet build "${{ inputs.project-name }}/${{ inputs.project-name }}.csproj" \
             -c Release \
             --no-restore
 
