@@ -1,12 +1,12 @@
 using System.Collections.Immutable;
 using System.Text;
 
-namespace Shed.LateInjection.SourceGeneration;
+namespace Shed.LateInjection.SourceGenerators;
 
-internal sealed class LateInjectorSourceBuilder
+internal sealed class InjectorSourceBuilder
 {
     public static string BuildLateInjectorSource(
-        ImmutableArray<LateInjectMethodInfo> methodInfos)
+        ImmutableArray<InjectMethodInfo> methodInfos)
     {
         var builder = new StringBuilder();
 
@@ -47,7 +47,7 @@ internal sealed class LateInjectorSourceBuilder
 
     private static void BuildSwitchCase(
         StringBuilder builder,
-        LateInjectMethodInfo methodInfo)
+        InjectMethodInfo methodInfo)
     {
         var args = string.Join(
                 ",\n                ",

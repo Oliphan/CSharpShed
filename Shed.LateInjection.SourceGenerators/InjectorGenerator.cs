@@ -3,23 +3,18 @@ using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
-using Shed.LateInjection.Attributes;
 
-namespace Shed.LateInjection.SourceGeneration;
+namespace Shed.LateInjection.SourceGenerators;
 
 [Generator]
-public class LateInjectorGenerator : IIncrementalGenerator
+public class InjectorGenerator : IIncrementalGenerator
 {
-    private static readonly string fullyQualifiedLateInjectAttributeName
-        = typeof(LateInjectAttribute).AssemblyQualifiedName;
-
-
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
         var lateInjectMethods = context
             .SyntaxProvider
             .ForAttributeWithMetadataName(
-                fullyQualifiedLateInjectAttributeName,
+                "Shed.LateInjection.Attributes.LateInjectAttribute",
                 NodeIsMethod,
                 TryGetMethodInfo)
             .Where(static info => info is not null)
@@ -32,9 +27,9 @@ public class LateInjectorGenerator : IIncrementalGenerator
 
     private static void GenerateInjector(
         SourceProductionContext context,
-        ImmutableArray<LateInjectMethodInfo> methodInfos)
+        ImmutableArray<InjectMethodInfo> methodInfos)
     {
-        var source = LateInjectorSourceBuilder.BuildLateInjectorSource(methodInfos);
+        var source = InjectorSourceBuilder.BuildLateInjectorSource(methodInfos);
 
         context.AddSource(
             "LateInjector.g.cs",
@@ -46,7 +41,7 @@ public class LateInjectorGenerator : IIncrementalGenerator
     private static bool NodeIsMethod(SyntaxNode node, CancellationToken _)
         => node is MethodDeclarationSyntax;
 
-    private static LateInjectMethodInfo? TryGetMethodInfo(
+    private static InjectMethodInfo? TryGetMethodInfo(
         GeneratorAttributeSyntaxContext methodContext,
         CancellationToken _)
     {
@@ -54,6 +49,6 @@ public class LateInjectorGenerator : IIncrementalGenerator
 
         return method.ReturnsVoid == false
             ? null
-            : LateInjectMethodInfo.FromMethodSymbol(method);
+            : InjectMethodInfo.FromMethodSymbol(method);
     }
 }
