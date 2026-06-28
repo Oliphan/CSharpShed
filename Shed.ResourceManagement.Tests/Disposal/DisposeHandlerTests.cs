@@ -5,42 +5,32 @@
 
 	public class DisposeHandlerTests
 	{
-		private Action<DisposeHandler> onDispose;
+		private readonly Action<DisposeHandler> onDispose = Substitute.For<Action<DisposeHandler>>();
 
 		private DisposeHandler handler;
 
 
-		[SetUp]
-		public void SetUp()
+		public DisposeHandlerTests()
 		{
-			onDispose = Substitute.For<Action<DisposeHandler>>();
-
 			handler = new DisposeHandler(onDispose);
 		}
 
 
-		[TearDown]
-		public void TearDown()
-		{
-			handler.Dispose();
-		}
-
-
-		[Test]
+		[Fact]
 		public void DisposeIsNotCalledEarly()
-			=> Assert.DoesNotThrow(() => onDispose.DidNotReceiveWithAnyArgs().Invoke(default!));
+			=> onDispose.DidNotReceiveWithAnyArgs().Invoke(default!);
 
-		[Test]
+		[Fact]
 		public void DisposeCorrectlyCallsOnDisposeCallbackOnFirstInvokation()
 		{
 			// Act
 			handler.Dispose();
 
 			// Assert
-			Assert.DoesNotThrow(() => onDispose.Received(1).Invoke(handler));
+			onDispose.Received(1).Invoke(handler);
 		}
 
-		[Test]
+		[Fact]
 		public void DisposeDoesNotCallOnDisposeCallbackOnSecondInvokation()
 		{
 			// Arrange
@@ -51,7 +41,7 @@
 			handler.Dispose();
 
 			// Assert
-			Assert.DoesNotThrow(() => onDispose.DidNotReceiveWithAnyArgs().Invoke(default!));
+			onDispose.DidNotReceiveWithAnyArgs().Invoke(default!);
 		}
 	}
 }
