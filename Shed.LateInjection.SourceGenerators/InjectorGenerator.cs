@@ -23,6 +23,23 @@ public class InjectorGenerator : IIncrementalGenerator
         context.RegisterSourceOutput(
             lateInjectMethods.Collect(),
             GenerateInjector);
+
+        context.RegisterSourceOutput(
+            lateInjectMethods.Collect(),
+            GenerateValidator);
+    }
+
+    private static void GenerateValidator(
+        SourceProductionContext context,
+        ImmutableArray<InjectMethodInfo> methodInfos)
+    {
+        var source = ValidatorSourceBuilder.BuildLateInjectValidatorSource(methodInfos);
+
+        context.AddSource(
+            "LateInjectValidator.g.cs",
+            SourceText.From(
+                source,
+                Encoding.UTF8));
     }
 
     private static void GenerateInjector(
