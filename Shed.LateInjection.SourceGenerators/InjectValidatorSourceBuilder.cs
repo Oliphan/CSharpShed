@@ -55,25 +55,4 @@ internal sealed class ValidatorSourceBuilder
 
         return builder.ToString();
     }
-
-
-    private static void BuildSwitchCase(
-        StringBuilder builder,
-        InjectMethodInfo methodInfo)
-    {
-        var args = string.Join(
-                ",\n                ",
-                methodInfo
-                    .ParameterTypes
-                    .Select(
-                        paramType => $"services.GetRequiredService<{paramType}>()"));
-
-        builder.AppendLine(
-            $"""
-                        case {methodInfo.FullyQualifiedTypeName} target:
-                            target.{methodInfo.MethodName}(
-                                {args});
-                            break;
-            """);
-    }
 }
