@@ -14,6 +14,7 @@ internal sealed class InjectorSourceBuilder
             """
             using System;
             using Microsoft.Extensions.DependencyInjection;
+            using Shed.LateInjection.Abstractions;
 
             namespace Shed.LateInjection.Generated;
 
@@ -63,7 +64,7 @@ internal sealed class InjectorSourceBuilder
     }
 
     private static string BuildGetServiceLine(string paramType)
-        => paramType == "Shed.LateInjection.ILateInjector"
+        => paramType == "Shed.LateInjection.Abstractions.ILateInjector"
             ? "this"
             : $"services.GetRequiredService<{paramType}>()";
 }
