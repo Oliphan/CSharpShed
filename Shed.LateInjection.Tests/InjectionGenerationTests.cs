@@ -14,9 +14,11 @@ public class LateInjectorTests
             .AddSingleton<Service>()
             .BuildServiceProvider();
 
+        var injector = new LateInjector(services);
+
         var injectable = new Injectable();
 
-        LateInjector.Inject(injectable, services);
+        injector.Inject(injectable);
         
         Assert.NotNull(injectable.Service);
         Assert.IsType<Service>(injectable.Service);
