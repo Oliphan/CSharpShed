@@ -20,5 +20,7 @@ public class LateInjectorTests
         
         Assert.NotNull(injectable.Service);
         Assert.IsType<Service>(injectable.Service);
+        Assert.NotNull(injectable.LateInjector);
+        Assert.IsType<LateInjector>(injectable.LateInjector);
     }
 }
