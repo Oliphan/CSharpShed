@@ -14,14 +14,13 @@ internal sealed class InjectorSourceBuilder
             """
             using System;
             using Microsoft.Extensions.DependencyInjection;
+            using Shed.LateInjection.Abstractions;
 
             namespace Shed.LateInjection.Generated;
 
-            public static class LateInjector
+            internal class LateInjector(IServiceProvider services) : ILateInjector
             {
-                public static void Inject(
-                    object instance,
-                    IServiceProvider services)
+                public void Inject(object instance)
                 {
                     switch(instance)
                     {
@@ -53,8 +52,7 @@ internal sealed class InjectorSourceBuilder
                 ",\n                ",
                 methodInfo
                     .ParameterTypes
-                    .Select(
-                        paramType => $"services.GetRequiredService<{paramType}>()"));
+                    .Select(BuildGetServiceLine));
 
         builder.AppendLine(
             $"""
@@ -64,4 +62,9 @@ internal sealed class InjectorSourceBuilder
                             break;
             """);
     }
+
+    private static string BuildGetServiceLine(string paramType)
+        => paramType == "global::Shed.LateInjection.Abstractions.ILateInjector"
+            ? "this"
+            : $"services.GetRequiredService<{paramType}>()";
 }

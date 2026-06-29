@@ -10,9 +10,12 @@ internal sealed class ValidatorSourceBuilder
     {
         var builder = new StringBuilder();
 
-        var paramTypes = methodInfos
-            .SelectMany(methodInfo => methodInfo.ParameterTypes)
-            .Distinct();
+        var paramTypes = new HashSet<string>(
+            methodInfos
+                .SelectMany(methodInfo => methodInfo.ParameterTypes)
+                .Distinct());
+
+        paramTypes.Remove("global::Shed.LateInjection.Abstractions.ILateInjector");
 
         builder.AppendLine(
             """
@@ -51,26 +54,5 @@ internal sealed class ValidatorSourceBuilder
             """);
 
         return builder.ToString();
-    }
-
-
-    private static void BuildSwitchCase(
-        StringBuilder builder,
-        InjectMethodInfo methodInfo)
-    {
-        var args = string.Join(
-                ",\n                ",
-                methodInfo
-                    .ParameterTypes
-                    .Select(
-                        paramType => $"services.GetRequiredService<{paramType}>()"));
-
-        builder.AppendLine(
-            $"""
-                        case {methodInfo.FullyQualifiedTypeName} target:
-                            target.{methodInfo.MethodName}(
-                                {args});
-                            break;
-            """);
     }
 }
