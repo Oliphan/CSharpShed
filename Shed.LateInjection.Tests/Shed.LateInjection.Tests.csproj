@@ -14,11 +14,9 @@
     <PackageReference Include="xunit.analyzers" Version="1.27.0" />
     <PackageReference Include="xunit.runner.visualstudio" Version="3.1.5" />
     <PackageReference Include="xunit.v3" Version="3.2.2" />
+    <PackageReference Include="Shed.LateInjection" Version="1.0.0" />
   </ItemGroup>
   <ItemGroup>
     <Using Include="Xunit" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Shed.LateInjection\Shed.LateInjection.csproj" />
   </ItemGroup>
 </Project>
