@@ -29,7 +29,8 @@ jobs:
         with:
           dotnet-version: "10.0.x"
           source-url: https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json
-        env: ${{ github.token }}
+        env:
+          NUGET_AUTH_TOKEN: ${{ github.token }}
 
       - name: Restore
         run: dotnet restore "${{ inputs.project-name }}/${{ inputs.project-name }}.csproj"
