@@ -17,11 +17,9 @@ internal sealed class InjectorSourceBuilder
 
             namespace Shed.LateInjection.Generated;
 
-            public static class LateInjector
+            internal class LateInjector(IServiceProvider services) : ILateInjector
             {
-                public static void Inject(
-                    object instance,
-                    IServiceProvider services)
+                public void LateInject(object instance)
                 {
                     switch(instance)
                     {
@@ -53,8 +51,7 @@ internal sealed class InjectorSourceBuilder
                 ",\n                ",
                 methodInfo
                     .ParameterTypes
-                    .Select(
-                        paramType => $"services.GetRequiredService<{paramType}>()"));
+                    .Select(BuildGetServiceLine));
 
         builder.AppendLine(
             $"""
@@ -64,4 +61,9 @@ internal sealed class InjectorSourceBuilder
                             break;
             """);
     }
+
+    private static string BuildGetServiceLine(string paramType)
+        => paramType == "Shed.LateInjection.ILateInjector"
+            ? "this"
+            : $"services.GetRequiredService<{paramType}>()";
 }

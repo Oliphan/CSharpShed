@@ -10,9 +10,12 @@ internal sealed class ValidatorSourceBuilder
     {
         var builder = new StringBuilder();
 
-        var paramTypes = methodInfos
-            .SelectMany(methodInfo => methodInfo.ParameterTypes)
-            .Distinct();
+        var paramTypes = new HashSet<string>(
+            methodInfos
+                .SelectMany(methodInfo => methodInfo.ParameterTypes)
+                .Distinct());
+
+        paramTypes.Remove("Shed.LateInjection.ILateInjector");
 
         builder.AppendLine(
             """
