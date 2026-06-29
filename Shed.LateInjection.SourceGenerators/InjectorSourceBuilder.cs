@@ -64,7 +64,7 @@ internal sealed class InjectorSourceBuilder
     }
 
     private static string BuildGetServiceLine(string paramType)
-        => paramType == "Shed.LateInjection.Abstractions.ILateInjector"
+        => paramType == "global::Shed.LateInjection.Abstractions.ILateInjector"
             ? "this"
             : $"services.GetRequiredService<{paramType}>()";
 }

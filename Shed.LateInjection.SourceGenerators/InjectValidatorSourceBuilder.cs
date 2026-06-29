@@ -15,7 +15,7 @@ internal sealed class ValidatorSourceBuilder
                 .SelectMany(methodInfo => methodInfo.ParameterTypes)
                 .Distinct());
 
-        paramTypes.Remove("Shed.LateInjection.ILateInjector");
+        paramTypes.Remove("global::Shed.LateInjection.Abstractions.ILateInjector");
 
         builder.AppendLine(
             """
