@@ -20,7 +20,7 @@ internal sealed class InjectorSourceBuilder
 
             internal class LateInjector(IServiceProvider services) : ILateInjector
             {
-                public void LateInject(object instance)
+                public void Inject(object instance)
                 {
                     switch(instance)
                     {
