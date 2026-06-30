@@ -19,6 +19,7 @@ internal sealed class ValidatorSourceBuilder
 
         builder.AppendLine(
             """
+            #pragma warning disable CS9113 // Parameter is unread
             using System;
             using Microsoft.Extensions.DependencyInjection;
 
@@ -51,6 +52,8 @@ internal sealed class ValidatorSourceBuilder
                             + "but is required by some LateInject methods. Please add a binding or remove the parameter.");
                 }
             }
+
+            #pragma warning restore CS9113 // Parameter is unread
             """);
 
         return builder.ToString();
