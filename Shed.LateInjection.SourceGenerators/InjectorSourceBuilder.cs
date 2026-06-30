@@ -12,6 +12,7 @@ internal sealed class InjectorSourceBuilder
 
         builder.AppendLine(
             """
+            #pragma warning disable CS9113 // Parameter is unread
             using System;
             using Microsoft.Extensions.DependencyInjection;
             using Shed.LateInjection.Abstractions;
@@ -38,6 +39,7 @@ internal sealed class InjectorSourceBuilder
                     }
                 }
             }
+            #pragma warning restore CS9113 // Parameter is unread
             """);
 
         return builder.ToString();
