@@ -1,0 +1,8 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Target Name="DisableLateInjectionGeneratorsTarget" BeforeTargets="CoreCompile">
+    <ItemGroup Condition="'$(DisableLateInjectionGenerators)' == 'true'">
+      <Analyzer Remove="@(Analyzer)" 
+                Condition="'%(Filename)' == 'Shed.LateInjection.SourceGenerators'" />
+    </ItemGroup>
+  </Target>
+</Project>
