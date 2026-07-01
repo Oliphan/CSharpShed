@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shed.LateInjection.SourceGe
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shed.LateInjection", "Shed.LateInjection\Shed.LateInjection.csproj", "{CE2DE762-B469-41CA-BFEB-EDE73150F43A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shed.LateInjection.Godot", "Shed.LateInjection.Godot\Shed.LateInjection.Godot.csproj", "{F2E564DD-FB4E-40D2-87A3-DC1BC34783A7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
