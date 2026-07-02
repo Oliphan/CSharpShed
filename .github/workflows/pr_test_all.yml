@@ -28,10 +28,10 @@ jobs:
       run: dotnet restore
 
     - uses: chickensoft-games/setup-godot@v2
-        name: 🤖 Setup Godot
-        with:
-          version: 4.7.0
-          use-dotnet: true
+      name: 🤖 Setup Godot
+      with:
+        version: 4.7.0
+        use-dotnet: true
 
     - name: Build
       run: dotnet build --no-restore
