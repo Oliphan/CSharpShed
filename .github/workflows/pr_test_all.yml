@@ -10,7 +10,7 @@ permissions:
   packages: read
 
 env:
-  GODOT_BIN: /usr/bin/godot
+  GODOT_BIN: ~/.local/bin/godot
 
 jobs:
   run-all-tests:
