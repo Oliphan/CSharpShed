@@ -19,7 +19,7 @@ internal sealed class InjectorSourceBuilder
 
             namespace Shed.LateInjection.Generated;
 
-            internal class LateInjector(IServiceProvider services) : ILateInjector
+            internal sealed class LateInjector(IServiceProvider services) : ILateInjector
             {
                 public void Inject(object instance)
                 {

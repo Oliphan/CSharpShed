@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net8.0;net10.0</TargetFrameworks>
+    <PackageId>Shed.LateInjection.Godot</PackageId>
+    <LangVersion>14</LangVersion>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <Authors>Liam Robinson</Authors>
+    <Description>
+      Provides dependency injection for Godot nodes via Microsoft.Extensions.DependencyInjection.
+    </Description>
+    <DisableLateInjectionGenerators>true</DisableLateInjectionGenerators>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="GodotSharp" Version="4.7.0" />
+    <PackageReference Include="Shed.LateInjection" Version="2.0.3" />
+  </ItemGroup>
+</Project>
