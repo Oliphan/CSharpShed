@@ -9,6 +9,9 @@ permissions:
   contents: read
   packages: read
 
+env:
+  GODOT_BIN: /usr/bin/godot-mono
+
 jobs:
   run-all-tests:
     runs-on: ubuntu-latest
