@@ -9,9 +9,6 @@ permissions:
   contents: read
   packages: read
 
-env:
-  GODOT_BIN: /home/runner/godot-linux
-
 jobs:
   run-all-tests:
     runs-on: ubuntu-latest
@@ -27,14 +24,11 @@ jobs:
       env:
         NUGET_AUTH_TOKEN: ${{ github.token }}
 
-    - uses: godot-gdunit-labs/gdUnit4-action/.gdunit4_action/godot-install@v1
-      name: Install Godot
+    - uses: godot-gdunit-labs/gdUnit4-action@v1
       with:
-        godot-version: 4.7.0
-        godot-net: true
-        godot-status-version: stable
-        install-path: '/home/runner/godot-linux'
-    
+        godot-version: '4.7.0'
+        paths: 'res://'
+
     - name: Restore
       run: dotnet restore
 
