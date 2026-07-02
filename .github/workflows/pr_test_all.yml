@@ -27,6 +27,7 @@ jobs:
     - uses: godot-gdunit-labs/gdUnit4-action@v1
       with:
         godot-version: '4.7.0'
+        project_dir: './Shed.LateInjection.Godot/'
         paths: 'res://'
 
     - name: Restore
