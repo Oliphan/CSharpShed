@@ -1,0 +1,10 @@
+config_version=5
+
+[application]
+
+config/name="Shed Late Injection Godot Tests"
+config/features=PackedStringArray("4.x", "C#", "Forward Plus")
+
+[dotnet]
+
+project/assembly_name="Shed.LateInjection.Godot.Tests"
