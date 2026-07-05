@@ -1,6 +1,3 @@
-using System;
-
-
 namespace Shed.ResourceManagement.Access.Abstractions
 {
 	/// <summary>

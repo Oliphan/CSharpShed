@@ -1,7 +1,4 @@
-﻿using System;
-
-
-namespace Shed.ResourceManagement.Disposal
+﻿namespace Shed.ResourceManagement.Disposal
 {
 	/// <summary>
 	/// Handles the execution of an action on first disposal.
