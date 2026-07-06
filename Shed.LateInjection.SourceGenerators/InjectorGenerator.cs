@@ -3,6 +3,7 @@ using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
+using Shed.LateInjection.SourceGenerators.Models;
 
 namespace Shed.LateInjection.SourceGenerators;
 
@@ -11,29 +12,56 @@ public class InjectorGenerator : IIncrementalGenerator
 {
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
-        var lateInjectMethods = context
+        var lateInjectSymbols = context
             .SyntaxProvider
             .ForAttributeWithMetadataName(
                 "Shed.LateInjection.Attributes.LateInjectAttribute",
-                NodeIsMethod,
-                TryGetMethodInfo)
-            .Where(static info => info is not null)
-            .Select(static (info, _) => info!);
+                static (node, _) =>
+                    node is PropertyDeclarationSyntax
+                    || node is VariableDeclaratorSyntax
+                    || node is MethodDeclarationSyntax,
+                static (node, _) => node.TargetSymbol);
+
+        var memberInfosForInject = lateInjectSymbols
+            .Combine(context.CompilationProvider)
+            .Where(static tuple => SymbolEqualityComparer.Default.Equals(
+                tuple.Left.ContainingAssembly, 
+                tuple.Right.Assembly))
+            .Select(static (tuple, _) => GetMemberInfo(tuple.Left));
+
+        var typeInfosForInject = memberInfosForInject
+            .Collect()
+            .SelectMany(
+                static (members, _) => members
+                    .GroupBy(static member => member.ContainingType, SymbolEqualityComparer.Default)
+                    .ToImmutableArray())
+            .Select(
+                static (group, _) => new InjectTypeInfo(
+                    (ITypeSymbol)group.Key!,
+                    group
+                        .OrderBy(member => member is InjectFieldOrPropertyInfo ? 0 : 1)
+                        .ToImmutableArray()));
 
         context.RegisterSourceOutput(
-            lateInjectMethods.Collect(),
+            typeInfosForInject.Collect(),
             GenerateInjector);
 
+        var memberInfosForValidation = lateInjectSymbols
+            .Select(static (symbol, _) => GetMemberInfo(symbol));
+
         context.RegisterSourceOutput(
-            lateInjectMethods.Collect(),
+            memberInfosForValidation.Collect(),
             GenerateValidator);
     }
 
     private static void GenerateValidator(
         SourceProductionContext context,
-        ImmutableArray<InjectMethodInfo> methodInfos)
+        ImmutableArray<InjectMemberInfo> memberInfos)
     {
-        var source = ValidatorSourceBuilder.BuildLateInjectValidatorSource(methodInfos);
+        if (memberInfos.Length == 0)
+            return;
+
+        var source = ValidatorSourceBuilder.BuildLateInjectValidatorSource(memberInfos);
 
         context.AddSource(
             "LateInjectValidator.g.cs",
@@ -44,28 +72,31 @@ public class InjectorGenerator : IIncrementalGenerator
 
     private static void GenerateInjector(
         SourceProductionContext context,
-        ImmutableArray<InjectMethodInfo> methodInfos)
+        ImmutableArray<InjectTypeInfo> typeInfos)
     {
-        var source = InjectorSourceBuilder.BuildLateInjectorSource(methodInfos);
+        if (typeInfos.Length == 0)
+            return;
+
+        var source = LateInjectionSourceBuilder.BuildLateInjectionSource(typeInfos);
 
         context.AddSource(
-            "LateInjector.g.cs",
+            "LateInjections.g.cs",
             SourceText.From(
                 source,
                 Encoding.UTF8));
     }
 
-    private static bool NodeIsMethod(SyntaxNode node, CancellationToken _)
-        => node is MethodDeclarationSyntax;
-
-    private static InjectMethodInfo? TryGetMethodInfo(
-        GeneratorAttributeSyntaxContext methodContext,
-        CancellationToken _)
+    private static InjectMemberInfo GetMemberInfo(ISymbol symbol)
     {
-        var method = (IMethodSymbol)methodContext.TargetSymbol;
+        if (symbol is IPropertySymbol property)
+            return new InjectFieldOrPropertyInfo(property);
 
-        return method.ReturnsVoid == false
-            ? null
-            : InjectMethodInfo.FromMethodSymbol(method);
+        if (symbol is IFieldSymbol field)
+            return new InjectFieldOrPropertyInfo(field);
+
+        if (symbol is IMethodSymbol method)
+            return new InjectMethodInfo(method);
+
+        throw new NotImplementedException();
     }
 }

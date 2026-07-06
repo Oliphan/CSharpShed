@@ -11,11 +11,13 @@
     </Description>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Shed.LateInjection.SourceGenerators\Shed.LateInjection.SourceGenerators.csproj" ReferenceOutputAssembly="false" />
-    <None Include="..\Shed.LateInjection.SourceGenerators\bin\$(Configuration)\netstandard2.0\Shed.LateInjection.SourceGenerators.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
-    <None Include="Shed.LateInjection.targets" Pack="true" PackagePath="build/" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.9" />
+    <PackageReference Include="Shed.ResourceManagement" Version="1.0.0" GeneratePathProperty="true" PrivateAssets="all" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.9" />
+    <ProjectReference Include="..\Shed.LateInjection.SourceGenerators\Shed.LateInjection.SourceGenerators.csproj" ReferenceOutputAssembly="false" />
+    <None Include="..\Shed.LateInjection.SourceGenerators\bin\$(Configuration)\netstandard2.0\Shed.LateInjection.SourceGenerators.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
+    <None Include="$(PkgShed_ResourceManagement)\lib\netstandard2.0\Shed.ResourceManagement.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
+    <None Include="Shed.LateInjection.targets" Pack="true" PackagePath="build/" />
   </ItemGroup>
 </Project>

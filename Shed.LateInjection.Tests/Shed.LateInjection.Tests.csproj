@@ -21,6 +21,5 @@
   <ItemGroup>
     <ProjectReference Include="..\Shed.LateInjection\Shed.LateInjection.csproj" />
     <ProjectReference Include="..\Shed.LateInjection.SourceGenerators\Shed.LateInjection.SourceGenerators.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
-    <None Include="..\Shed.LateInjection.SourceGenerators\bin\$(Configuration)\netstandard2.0\Shed.LateInjection.SourceGenerators.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
   </ItemGroup>
 </Project>

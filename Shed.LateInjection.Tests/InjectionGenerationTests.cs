@@ -1,6 +1,4 @@
 using Microsoft.Extensions.DependencyInjection;
-using Shed.LateInjection.Attributes;
-using Shed.LateInjection.Generated;
 using Shed.LateInjection.Tests.TestClasses;
 
 namespace Shed.LateInjection.Tests;
@@ -10,19 +8,27 @@ public class LateInjectorTests
     [Fact]
     public void Inject_InjectsDependencies()
     {
+        // Arrange
         var services = new ServiceCollection()
-            .AddSingleton<Service>()
+            .AddTransient<Service>()
             .BuildServiceProvider();
-
-        var injector = new LateInjector(services);
 
         var injectable = new Injectable();
 
-        injector.Inject(injectable);
-        
-        Assert.NotNull(injectable.Service);
-        Assert.IsType<Service>(injectable.Service);
-        Assert.NotNull(injectable.LateInjector);
-        Assert.IsType<LateInjector>(injectable.LateInjector);
+        // Act
+        services.LateInject(injectable);
+
+        // Assert
+        Assert.NotNull(injectable.Service1);
+        Assert.NotNull(injectable.Service2);
+        Assert.NotNull(injectable.ServiceProvider);
+        Assert.NotNull(injectable.Service3);
+        Assert.NotNull(injectable.GetService4());
+        Assert.NotSame(injectable.Service1, injectable.Service2);
+        Assert.NotSame(injectable.Service1, injectable.Service3);
+        Assert.NotSame(injectable.Service1, injectable.GetService4());
+        Assert.NotSame(injectable.Service2, injectable.Service3);
+        Assert.NotSame(injectable.Service2, injectable.GetService4());
+        Assert.NotSame(injectable.Service3, injectable.GetService4());
     }
 }
