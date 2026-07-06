@@ -1,5 +1,4 @@
 using Microsoft.Extensions.DependencyInjection;
-using Shed.LateInjection.Attributes;
 using Shed.LateInjection.Generated;
 using Shed.LateInjection.Tests.TestClasses;
 

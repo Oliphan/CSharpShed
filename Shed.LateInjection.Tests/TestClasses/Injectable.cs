@@ -1,17 +1,30 @@
-using Shed.LateInjection.Abstractions;
 using Shed.LateInjection.Attributes;
 
 namespace Shed.LateInjection.Tests.TestClasses;
 
-public class Injectable
+public partial class Injectable
 {
-    public Service Service { get; set; } = default!;
-    public ILateInjector LateInjector { get; set; } = default!;
+    [LateInject]
+    public void OnLateInject2(Service service)
+    {
+        Service2 = service;
+    }
+
+    public Service Service1 { get; set; } = null!;
+    public Service Service2 { get; set; } = null!;
+    public IServiceProvider ServiceProvider { get; set; } = null!;
+    [LateInject]
+    public Service Service3 { get; set; } = null!;
+    [LateInject]
+    private Service service4 = null!;
 
     [LateInject]
-    public void Inject(Service service, ILateInjector lateInjector)
+    public void OnLateInject1(Service service, IServiceProvider serviceProvider)
     {
-        Service = service;
-        LateInjector = lateInjector;
+        Service1 = service;
+        ServiceProvider = serviceProvider;
     }
+
+    public Service GetService4()
+        => service4;
 }
