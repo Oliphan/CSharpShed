@@ -1,21 +1,29 @@
 using System.Collections.Immutable;
 using System.Text;
+using Shed.LateInjection.SourceGenerators.Models;
 
 namespace Shed.LateInjection.SourceGenerators;
 
 internal sealed class ValidatorSourceBuilder
 {
     public static string BuildLateInjectValidatorSource(
-        ImmutableArray<InjectMethodInfo> methodInfos)
+        ImmutableArray<InjectMemberInfo> memberInfos)
     {
         var builder = new StringBuilder();
 
-        var paramTypes = new HashSet<string>(
-            methodInfos
-                .SelectMany(methodInfo => methodInfo.ParameterTypes)
-                .Distinct());
+        var allTypesUsedInInjections = memberInfos
+            .SelectMany(
+                static memberInfo =>
+                {
+                    if (memberInfo is InjectMethodInfo methodInfo)
+                        return methodInfo.ParameterTypes;
 
-        paramTypes.Remove("global::Shed.LateInjection.Abstractions.ILateInjector");
+                    if (memberInfo is InjectFieldOrPropertyInfo fieldOrPropertyInfo)
+                        return [fieldOrPropertyInfo.TypeName];
+                    
+                    throw new NotImplementedException();
+                })
+            .Distinct();
 
         builder.AppendLine(
             """
@@ -25,7 +33,7 @@ internal sealed class ValidatorSourceBuilder
 
             namespace Shed.LateInjection.Generated;
 
-            public static class LateInjectValidator
+            internal static class LateInjectValidator
             {
                 public static void Validate(
                     IServiceProvider services)
@@ -33,7 +41,7 @@ internal sealed class ValidatorSourceBuilder
                     var serviceProviderIsService = services.GetRequiredService<IServiceProviderIsService>();
             """);
 
-        foreach (var paramType in paramTypes)
+        foreach (var paramType in allTypesUsedInInjections)
         {
             builder.Append("ThrowIfNotAvailable<");
             builder.Append(paramType);
