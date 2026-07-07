@@ -36,8 +36,6 @@ public partial class LateInjectorExtensionsTests
         var services = new ServiceCollection()
             .BuildServiceProvider();
 
-        var injector = new LateInjector(services);
-
         List<string> injectList = [];
 
         var root = AutoFree(new TestNode(
@@ -77,7 +75,7 @@ public partial class LateInjectorExtensionsTests
         child2.AddChild(subchild3);
 
         // Act
-        var injectedNodes = await injector.InjectWithPostCallbacks(root);
+        var injectedNodes = await services.LateInjectWithPostCallbacks(root);
 
         // Assert
         AssertThat(injectList)
