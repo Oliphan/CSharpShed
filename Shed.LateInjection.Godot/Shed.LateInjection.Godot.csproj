@@ -14,6 +14,6 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="GodotSharp" Version="4.7.0" />
-    <PackageReference Include="Shed.LateInjection" Version="2.0.4" />
+    <PackageReference Include="Shed.LateInjection" Version="1.0.0" />
   </ItemGroup>
 </Project>
