@@ -197,9 +197,13 @@ internal sealed class LateInjectionSourceBuilder
             .ToString()
             .ToLower();
         
+        var lateInjectableInheritance = types.Count == 0
+            ? " : ILateInjectable"
+            : string.Empty;
+
         // Replicate the type declaration with 'partial'
         builder.AppendIndentedLine(
-            $"{accessibilityModifier} partial {typeDeclarationKeyword} {currentType.Name} : ILateInjectable");
+            $"{accessibilityModifier} partial {typeDeclarationKeyword} {currentType.Name}{lateInjectableInheritance}");
         
         var typeScope = builder.CurlyScope();
         if (types.Count == 0)
