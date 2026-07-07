@@ -13,7 +13,7 @@ public class LateInjectorTests
             .AddTransient<Service>()
             .BuildServiceProvider();
 
-        var injectable = new Injectable();
+        var injectable = new InjectableWrapper.Injectable();
 
         // Act
         services.LateInject(injectable);
